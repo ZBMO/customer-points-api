@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,22 +24,18 @@ class LoadDatabase {
 
     @Bean
     CommandLineRunner initDatabase(CustomerRepository customerRepository, PurchaseRepository purchaseRepository) {
-
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("Z"));
-
+        LocalDate today = LocalDate.now();
         return args -> {
-            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(1L, "dave", new BigDecimal(55), now.toString())));
-            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(2L, "dave", new BigDecimal(72.33), now.toString())));
-            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(3L, "dave", new BigDecimal(10.99), now.toString())));
-            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(4L, "dave", new BigDecimal(102.33), now.minusMonths(1).toString())));
-            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(5L, "dave", new BigDecimal(100.55), now.minusMonths(1).toString())));
-            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(6L, "dave", new BigDecimal(245.10), now.minusMonths(1).toString())));
-            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(7L, "dave", new BigDecimal(71.36), now.minusMonths(2).toString())));
-            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(8L, "dave", new BigDecimal(222.22), now.minusMonths(2).toString())));
-            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(9L, "dave", new BigDecimal(18.86), now.minusMonths(3).toString())));
+            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(1L, "dave", new BigDecimal(55), today.toString())));
+            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(2L, "dave", new BigDecimal(72.33), today.toString())));
+            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(3L, "dave", new BigDecimal(10.99), today.toString())));
+            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(4L, "dave", new BigDecimal(102.33), today.minusMonths(1).toString())));
+            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(5L, "dave", new BigDecimal(100.55), today.minusMonths(1).toString())));
+            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(6L, "dave", new BigDecimal(245.10), today.minusMonths(1).toString())));
+            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(7L, "dave", new BigDecimal(71.36), today.minusMonths(2).toString())));
+            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(8L, "dave", new BigDecimal(222.22), today.minusMonths(2).toString())));
+            log.info("Preloading purchases" + purchaseRepository.save(new Purchase(9L, "dave", new BigDecimal(18.86), today.minusMonths(3).toString())));
         };
-
-
     }
 
 }
