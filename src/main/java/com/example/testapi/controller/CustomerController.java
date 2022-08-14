@@ -22,10 +22,10 @@ public class CustomerController {
 
     // Aggregate root
     // tag::get-aggregate-root[]
-//    @GetMapping("/customers")
-//    List<Customer> all() {
-//        return purchaseService.findAll();
-//    }
+    @GetMapping("/customers")
+    List<CustomerPoints> all() {
+        return purchaseService.findAll();
+    }
     // end::get-aggregate-root[]
 {}
     // Single item

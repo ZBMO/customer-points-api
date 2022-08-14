@@ -27,6 +27,19 @@ public class PurchaseServiceTest {
     protected void setup() {purchaseService = new PurchaseService(purchaseRepository);}
 
     @Test
+    void getAllCustomers_recordsArePresent_returnMultipleCustomers() {
+        Purchase purchase1 = new Purchase(1L, "dave", new BigDecimal(75), today.toString());
+        Purchase purchase2 = new Purchase(2L, "mary", new BigDecimal(101), today.toString());
+        List<Purchase> repoResponse = Arrays.asList(purchase1, purchase2);
+
+        when(purchaseRepository.findLastThreeMonths(anyString())).thenReturn(repoResponse);
+
+        List<CustomerPoints> actualResponse = purchaseService.findAll();
+
+        assertEquals(2, actualResponse.size());
+    }
+
+    @Test
     void getCustomerPoints_whenBelowSinglePointThreshold_ReturnZero() {
         List<Purchase> repoResponse = new ArrayList<>();
         BigDecimal price = new BigDecimal(50);

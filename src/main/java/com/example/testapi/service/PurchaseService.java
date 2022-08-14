@@ -25,6 +25,27 @@ public class PurchaseService {
     PurchaseService(PurchaseRepository purchaseRepository) {
         this.purchaseRepository = purchaseRepository;
     }
+
+    public List<CustomerPoints> findAll() {
+        List<Purchase> purchases = purchaseRepository.findLastThreeMonths(currentDateMinus3months);
+
+
+        Map<String, List<Purchase>> purchaseMap = new HashMap<>();
+
+        purchases.forEach(purchase -> {
+            String name = purchase.getCustomerName();
+            if (purchaseMap.containsKey(name)) {
+                purchaseMap.get(name).add(purchase);
+            }
+            else {
+                purchaseMap.put(name, Arrays.asList(purchase));
+            }
+        });
+
+        return null;
+    };
+
+
     public CustomerPoints getCustomerPoints(String name) {
         List<Purchase> purchases = purchaseRepository.findByCustomerName(name, currentDateMinus3months);
 
@@ -41,7 +62,7 @@ public class PurchaseService {
                 monthPointsMap.put(month, monthPointsMap.get(month) + newPoints);
             }
 
-            if (!monthPointsMap.containsKey(month)) {
+            else {
                 monthPointsMap.put(month, newPoints);
             }
         });
