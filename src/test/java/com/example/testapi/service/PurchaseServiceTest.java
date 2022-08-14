@@ -7,10 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +21,7 @@ public class PurchaseServiceTest {
 
     PurchaseService purchaseService;
     final PurchaseRepository purchaseRepository = mock(PurchaseRepository.class);
-    ZonedDateTime now = ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("Z"));
+    LocalDate today = LocalDate.now();
 
     @BeforeEach
     protected void setup() {purchaseService = new PurchaseService(purchaseRepository);}
@@ -33,7 +30,8 @@ public class PurchaseServiceTest {
     void getCustomerPoints_whenBelowSinglePointThreshold_ReturnZero() {
         List<Purchase> repoResponse = new ArrayList<>();
         BigDecimal price = new BigDecimal(50);
-        Purchase purchase = new Purchase(1L, "dave", price, now.toString());
+
+        Purchase purchase = new Purchase(1L, "dave", price, today.toString());
         repoResponse.add(purchase);
 
         when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
@@ -47,7 +45,7 @@ public class PurchaseServiceTest {
     void getCustomerPoints_whenAboveSinglePointThreshold_ReturnPoints() {
         List<Purchase> repoResponse = new ArrayList<>();
         BigDecimal price = new BigDecimal(51);
-        Purchase purchase = new Purchase(1L, "dave", price, LocalDateTime.now().toString());
+        Purchase purchase = new Purchase(1L, "dave", price, today.toString());
         repoResponse.add(purchase);
 
         when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
@@ -60,7 +58,7 @@ public class PurchaseServiceTest {
     void getCustomerPoints_whenAboveDoublePointThreshold_ReturnPoints() {
         List<Purchase> repoResponse = new ArrayList<>();
         BigDecimal price = new BigDecimal(101);
-        Purchase purchase = new Purchase(1L, "dave", price, LocalDateTime.now().toString());
+        Purchase purchase = new Purchase(1L, "dave", price, today.toString());
         repoResponse.add(purchase);
 
         when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
@@ -71,9 +69,9 @@ public class PurchaseServiceTest {
 
     @Test
     void getCustomerPoints_multiplePurchases_addUpPoints() {
-        Purchase purchase1 = new Purchase(1L, "dave", new BigDecimal(75), LocalDateTime.now().toString());
-        Purchase purchase2 = new Purchase(2L, "dave", new BigDecimal(101), LocalDateTime.now().minusDays(1).toString());
-        Purchase purchase3 = new Purchase(3L, "dave", new BigDecimal(200), LocalDateTime.now().minusDays(2).toString());
+        Purchase purchase1 = new Purchase(1L, "dave", new BigDecimal(75), today.toString());
+        Purchase purchase2 = new Purchase(2L, "dave", new BigDecimal(101), today.minusDays(1).toString());
+        Purchase purchase3 = new Purchase(3L, "dave", new BigDecimal(200), today.minusDays(2).toString());
         List<Purchase> repoResponse = Arrays.asList(purchase1, purchase2, purchase3);
 
         when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
@@ -84,12 +82,12 @@ public class PurchaseServiceTest {
 
     @Test
     void getCustomerPoints_multipleMonths_addUpPointsPerMonth() {
-        Purchase purchase1 = new Purchase(1L, "dave", new BigDecimal(75), LocalDateTime.now().toString());
-        Purchase purchase2 = new Purchase(2L, "dave", new BigDecimal(101), LocalDateTime.now().minusDays(1).toString());
-        Purchase purchase3 = new Purchase(3L, "dave", new BigDecimal(200), LocalDateTime.now().minusDays(2).toString());
-        Purchase purchase4 = new Purchase(4L, "dave", new BigDecimal(76), LocalDateTime.now().minusMonths(1).toString());
-        Purchase purchase5 = new Purchase(5L, "dave", new BigDecimal(102), LocalDateTime.now().minusMonths(1).toString());
-        Purchase purchase6 = new Purchase(6L, "dave", new BigDecimal(99), LocalDateTime.now().minusMonths(1).toString());
+        Purchase purchase1 = new Purchase(1L, "dave", new BigDecimal(75), today.toString());
+        Purchase purchase2 = new Purchase(2L, "dave", new BigDecimal(101), today.minusDays(1).toString());
+        Purchase purchase3 = new Purchase(3L, "dave", new BigDecimal(200), today.minusDays(2).toString());
+        Purchase purchase4 = new Purchase(4L, "dave", new BigDecimal(76), today.minusMonths(1).toString());
+        Purchase purchase5 = new Purchase(5L, "dave", new BigDecimal(102), today.minusMonths(1).toString());
+        Purchase purchase6 = new Purchase(6L, "dave", new BigDecimal(99), today.minusMonths(1).toString());
         List<Purchase> repoResponse = Arrays.asList(purchase1, purchase2, purchase3, purchase4, purchase5, purchase6);
 
         when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
@@ -101,12 +99,12 @@ public class PurchaseServiceTest {
 
     @Test
     void getCustomerPoints_multipleMonths_PointsTotal() {
-        Purchase purchase1 = new Purchase(1L, "dave", new BigDecimal(75), LocalDateTime.now().toString());
-        Purchase purchase2 = new Purchase(2L, "dave", new BigDecimal(101), LocalDateTime.now().minusDays(1).toString());
-        Purchase purchase3 = new Purchase(3L, "dave", new BigDecimal(200), LocalDateTime.now().minusDays(2).toString());
-        Purchase purchase4 = new Purchase(4L, "dave", new BigDecimal(76), LocalDateTime.now().minusMonths(1).toString());
-        Purchase purchase5 = new Purchase(5L, "dave", new BigDecimal(102), LocalDateTime.now().minusMonths(1).toString());
-        Purchase purchase6 = new Purchase(6L, "dave", new BigDecimal(99), LocalDateTime.now().minusMonths(1).toString());
+        Purchase purchase1 = new Purchase(1L, "dave", new BigDecimal(75), today.toString());
+        Purchase purchase2 = new Purchase(2L, "dave", new BigDecimal(101), today.minusDays(1).toString());
+        Purchase purchase3 = new Purchase(3L, "dave", new BigDecimal(200), today.minusDays(2).toString());
+        Purchase purchase4 = new Purchase(4L, "dave", new BigDecimal(76), today.minusMonths(1).toString());
+        Purchase purchase5 = new Purchase(5L, "dave", new BigDecimal(102), today.minusMonths(1).toString());
+        Purchase purchase6 = new Purchase(6L, "dave", new BigDecimal(99), today.minusMonths(1).toString());
         List<Purchase> repoResponse = Arrays.asList(purchase1, purchase2, purchase3, purchase4, purchase5, purchase6);
 
         when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);

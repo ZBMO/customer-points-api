@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,7 +32,8 @@ public class PurchaseService {
         AtomicInteger totalPoints = new AtomicInteger();
 
         purchases.forEach(purchase -> {
-            String month = LocalDateTime.from(DateTimeFormatter.ISO_INSTANT.parse(purchase.getDate())).getMonth().toString();
+
+            String month = LocalDate.parse(purchase.getDate()).getMonth().toString();
             int newPoints = getPoints(purchase.getPrice());
             totalPoints.addAndGet(newPoints);
 
