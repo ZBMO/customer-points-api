@@ -37,19 +37,19 @@ public class PurchaseServiceTest {
     protected void setup() {purchaseService = new PurchaseService(purchaseRepository);}
 
     @Test
-    void getAllCustomers_recordsArePresent_returnMultipleCustomers() {
+    void getAllCustomerPoints_recordsArePresent_returnMultipleCustomers() {
         when(purchaseRepository.findLastThreeMonths(anyString())).thenReturn(repoResponse);
 
-        List<CustomerPoints> actualResponse = purchaseService.findAll();
+        List<CustomerPoints> actualResponse = purchaseService.getAllCustomerPoints();
 
         assertEquals(2, actualResponse.size());
     }
 
     @Test
-    void getAllCustomers_recordsArePresent_returnCorrectPointTotals() {
+    void getAllCustomerPoints_recordsArePresent_returnCorrectPointTotals() {
         when(purchaseRepository.findLastThreeMonths(anyString())).thenReturn(repoResponse);
 
-        List<CustomerPoints> actualResponse = purchaseService.findAll();
+        List<CustomerPoints> actualResponse = purchaseService.getAllCustomerPoints();
 
         assertEquals(106, actualResponse.get(0).getTotalPoints());
         assertEquals(112, actualResponse.get(1).getTotalPoints());
@@ -57,78 +57,81 @@ public class PurchaseServiceTest {
 
 
     @Test
-    void getCustomerPoints_whenRepoResponseEmpty_ReturnEmptyCustomerPoints() {
+    void getAllCustomerPoints_whenRepoResponseEmpty_ReturnEmptyCustomerPoints() {
         List<Purchase> repoResponse = new ArrayList<>();
 
-        when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
+        when(purchaseRepository.findLastThreeMonths(anyString())).thenReturn(repoResponse);
 
-        CustomerPoints response = purchaseService.getCustomerPoints("dave");
-        CustomerPoints expectedResponse = CustomerPoints.builder().build();
+        List<CustomerPoints> actualResponse = purchaseService.getAllCustomerPoints();
+        List<CustomerPoints> expectedResponse = new ArrayList();
 
-        assertEquals(expectedResponse, response);
+        assertEquals(expectedResponse, actualResponse);
     }
 
     @Test
-    void getCustomerPoints_whenRepoResponseIsNull_ReturnEmptyCustomerPoints() {
-        when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(null);
+    void getAllCustomerPoints_whenRepoResponseIsNull_ReturnEmptyCustomerPoints() {
+        when(purchaseRepository.findLastThreeMonths(anyString())).thenReturn(null);
 
-        CustomerPoints response = purchaseService.getCustomerPoints("dave");
-        CustomerPoints expectedResponse = CustomerPoints.builder().build();
+        List<CustomerPoints> actualResponse = purchaseService.getAllCustomerPoints();
+        List<CustomerPoints> expectedResponse = new ArrayList();
 
-        assertEquals(expectedResponse, response);
+        assertEquals(expectedResponse, actualResponse);
     }
 
     @Test
-    void getCustomerPoints_whenBelowSinglePointThreshold_ReturnZero() {
+    void getAllCustomerPoints_whenBelowSinglePointThreshold_ReturnZero() {
         List<Purchase> repoResponse = new ArrayList<>();
         BigDecimal price = new BigDecimal(50);
         Purchase purchase = new Purchase("dave", price, today.toString());
         repoResponse.add(purchase);
 
-        when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
+        when(purchaseRepository.findLastThreeMonths(anyString())).thenReturn(repoResponse);
 
-        CustomerPoints response = purchaseService.getCustomerPoints("dave");
-        assertEquals("dave", response.getName());
-        assertEquals(0, response.getPointsByMonth().get(0).getPoints());
+        List<CustomerPoints> actualResponse = purchaseService.getAllCustomerPoints();
+
+        assertEquals(0, actualResponse.get(0).getTotalPoints());
     }
 
     @Test
-    void getCustomerPoints_whenAboveSinglePointThreshold_ReturnPoints() {
+    void getAllCustomerPoints_whenAboveSinglePointThreshold_ReturnPoints() {
         List<Purchase> repoResponse = new ArrayList<>();
         BigDecimal price = new BigDecimal(51);
         Purchase purchase = new Purchase("dave", price, today.toString());
         repoResponse.add(purchase);
 
-        when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
+        when(purchaseRepository.findLastThreeMonths(anyString())).thenReturn(repoResponse);
 
-        CustomerPoints response = purchaseService.getCustomerPoints("dave");
-        assertEquals(1, response.getPointsByMonth().get(0).getPoints());
+        List<CustomerPoints> actualResponse = purchaseService.getAllCustomerPoints();
+
+        assertEquals(1, actualResponse.get(0).getTotalPoints());
     }
 
     @Test
-    void getCustomerPoints_whenAboveDoublePointThreshold_ReturnPoints() {
+    void getAllCustomerPoints_whenAboveDoublePointThreshold_ReturnPoints() {
         List<Purchase> repoResponse = new ArrayList<>();
         BigDecimal price = new BigDecimal(101);
         Purchase purchase = new Purchase("dave", price, today.toString());
         repoResponse.add(purchase);
 
-        when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
+        when(purchaseRepository.findLastThreeMonths(anyString())).thenReturn(repoResponse);
 
-        CustomerPoints response = purchaseService.getCustomerPoints("dave");
-        assertEquals(52, response.getPointsByMonth().get(0).getPoints());
+        List<CustomerPoints> actualResponse = purchaseService.getAllCustomerPoints();
+
+        assertEquals(52, actualResponse.get(0).getTotalPoints());
     }
 
     @Test
-    void getCustomerPoints_multiplePurchases_addUpPoints() {
+    void getAllCustomerPoints_multiplePurchases_addUpPoints() {
         Purchase purchase1 = new Purchase("dave", new BigDecimal(75), today.toString());
         Purchase purchase2 = new Purchase("dave", new BigDecimal(101), today.minusDays(1).toString());
         Purchase purchase3 = new Purchase("dave", new BigDecimal(200), today.minusDays(2).toString());
         List<Purchase> repoResponse = Arrays.asList(purchase1, purchase2, purchase3);
 
-        when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
+        when(purchaseRepository.findLastThreeMonths(anyString())).thenReturn(repoResponse);
 
-        CustomerPoints response = purchaseService.getCustomerPoints("dave");
-        assertEquals(327, response.getPointsByMonth().get(0).getPoints());
+        List<CustomerPoints> actualResponse = purchaseService.getAllCustomerPoints();
+
+        assertEquals(327, actualResponse.get(0).getTotalPoints());
     }
 
     @Test
@@ -141,11 +144,12 @@ public class PurchaseServiceTest {
         Purchase purchase6 = new Purchase("dave", new BigDecimal(99), today.minusMonths(1).toString());
         List<Purchase> repoResponse = Arrays.asList(purchase1, purchase2, purchase3, purchase4, purchase5, purchase6);
 
-        when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
+        when(purchaseRepository.findLastThreeMonths(anyString())).thenReturn(repoResponse);
 
-        CustomerPoints response = purchaseService.getCustomerPoints("dave");
-        assertEquals(327, response.getPointsByMonth().get(0).getPoints());
-        assertEquals(129, response.getPointsByMonth().get(1).getPoints());
+        List<CustomerPoints> actualResponse = purchaseService.getAllCustomerPoints();
+
+        assertEquals(327, actualResponse.get(0).getPointsByMonth().get(0).getPoints());
+        assertEquals(129, actualResponse.get(0).getPointsByMonth().get(1).getPoints());
     }
 
     @Test
@@ -158,10 +162,11 @@ public class PurchaseServiceTest {
         Purchase purchase6 = new Purchase("dave", new BigDecimal(99), today.minusMonths(1).toString());
         List<Purchase> repoResponse = Arrays.asList(purchase1, purchase2, purchase3, purchase4, purchase5, purchase6);
 
-        when(purchaseRepository.findByCustomerName(anyString(), anyString())).thenReturn(repoResponse);
+        when(purchaseRepository.findLastThreeMonths(anyString())).thenReturn(repoResponse);
 
-        CustomerPoints response = purchaseService.getCustomerPoints("dave");
-        assertEquals(456, response.getTotalPoints());
+        List<CustomerPoints> actualResponse = purchaseService.getAllCustomerPoints();
+
+        assertEquals(456, actualResponse.get(0).getTotalPoints());
     }
 
 }
