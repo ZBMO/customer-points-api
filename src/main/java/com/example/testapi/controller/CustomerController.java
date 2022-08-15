@@ -19,22 +19,10 @@ public class CustomerController {
         this.purchaseService = purchaseService;
     }
 
-
-    // Aggregate root
-    // tag::get-aggregate-root[]
-//    @GetMapping("/customers")
-//    List<Customer> all() {
-//        return purchaseService.findAll();
-//    }
-    // end::get-aggregate-root[]
-{}
-    // Single item
-
-//    @GetMapping("/customers/{id}")
-//    Customer one(@PathVariable Long id) {
-//        return repository.findById(id)
-//                .orElseThrow(() -> new CustomerNotFoundException(id));
-//    }
+    @GetMapping("/customers")
+    List<CustomerPoints> all() {
+        return purchaseService.findAll();
+    }
 
     @GetMapping("/customers/{name}/points")
     CustomerPoints getPoints(@PathVariable String name) {
