@@ -1,7 +1,5 @@
 package com.example.testapi.model;
 
-import com.example.testapi.model.Customer;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 

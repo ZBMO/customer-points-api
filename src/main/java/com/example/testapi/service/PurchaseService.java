@@ -5,14 +5,12 @@ import com.example.testapi.model.MonthPoints;
 import com.example.testapi.model.Purchase;
 import com.example.testapi.repository.PurchaseRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,8 +27,7 @@ public class PurchaseService {
     public List<CustomerPoints> findAll() {
         List<Purchase> purchases = purchaseRepository.findLastThreeMonths(currentDateMinus3months);
 
-
-        Map<String, List<Purchase>> purchaseMap = new HashMap<>();
+        Map<String, ArrayList<Purchase>> purchaseMap = new HashMap<>();
 
         purchases.forEach(purchase -> {
             String name = purchase.getCustomerName();
@@ -38,16 +35,33 @@ public class PurchaseService {
                 purchaseMap.get(name).add(purchase);
             }
             else {
-                purchaseMap.put(name, Arrays.asList(purchase));
+                purchaseMap.put(name, new ArrayList<>());
+                purchaseMap.get(name).add(purchase);
             }
         });
 
-        return null;
+        List<CustomerPoints> response = new ArrayList<>();
+
+        for (var entry : purchaseMap.entrySet()) {
+            response.add(getSingleCustomerPoints(entry.getValue(), entry.getKey()));
+        }
+
+        return response;
     };
 
 
     public CustomerPoints getCustomerPoints(String name) {
         List<Purchase> purchases = purchaseRepository.findByCustomerName(name, currentDateMinus3months);
+
+        if (CollectionUtils.isEmpty(purchases)) {
+            return CustomerPoints.builder().build();
+        }
+
+        return getSingleCustomerPoints(purchases, purchases.get(0).getCustomerName());
+    }
+
+
+    private CustomerPoints getSingleCustomerPoints(List<Purchase> purchases, String name) {
 
         Map<String, Integer> monthPointsMap = new HashMap<>();
         AtomicInteger totalPoints = new AtomicInteger();
@@ -78,6 +92,8 @@ public class PurchaseService {
                 .pointsByMonth(monthPoints)
                 .build();
     }
+
+
 
     private int getPoints(BigDecimal moneySpent) {
         final int single_point_threshold = 50;
