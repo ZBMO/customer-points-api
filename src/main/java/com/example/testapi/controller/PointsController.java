@@ -3,27 +3,21 @@ package com.example.testapi.controller;
 import com.example.testapi.controller.resource.CustomerPoints;
 import com.example.testapi.service.PurchaseService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-public class CustomerController {
+public class PointsController {
 
     private final PurchaseService purchaseService;
 
-    CustomerController(PurchaseService purchaseService) {
+    PointsController(PurchaseService purchaseService) {
         this.purchaseService = purchaseService;
     }
 
-    @GetMapping("/customers")
+    @GetMapping("/points")
     List<CustomerPoints> all() {
-        return purchaseService.findAll();
-    }
-
-    @GetMapping("/customers/{name}/points")
-    CustomerPoints getPoints(@PathVariable String name) {
-        return purchaseService.getCustomerPoints(name);
+        return purchaseService.getAllCustomerPoints();
     }
 }
