@@ -9,6 +9,7 @@ public class Purchase {
 
     @Id
     @Column(name = "purchase_id")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long purchaseId;
     private String customerName;
     private BigDecimal price;
@@ -17,8 +18,7 @@ public class Purchase {
 
     public Purchase() {}
 
-    public Purchase(Long purchaseId, String customerName, BigDecimal price, String date) {
-        this.purchaseId = purchaseId;
+    public Purchase(String customerName, BigDecimal price, String date) {
         this.customerName = customerName;
         this.price = price;
         this.date = date;

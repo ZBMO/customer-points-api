@@ -1,8 +1,6 @@
 package com.example.testapi.controller;
 
 import com.example.testapi.controller.resource.CustomerPoints;
-import com.example.testapi.model.Customer;
-import com.example.testapi.model.Purchase;
 import com.example.testapi.service.PurchaseService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
